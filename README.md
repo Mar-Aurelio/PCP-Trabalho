@@ -1,4 +1,4 @@
 # PCP - Bar dos Filósofos
 
 # Compilação
-```g++ src/*.cpp main.cpp```
+```g++ include/*.cpp main.cpp```
