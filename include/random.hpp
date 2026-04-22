@@ -6,14 +6,6 @@ class SFC64 {
   private:
     uint64_t a, b, c, counter;
 
-    uint64_t Next() {
-      uint64_t result = a + b + counter++;
-      a = b ^ (b >> 11);
-      b = c + (c << 3);
-      c = ((c << 24) | (c >> 40)) + result;
-      return result;
-    }
-
   public:
     SFC64(uint64_t seed) {
       a = seed;
@@ -24,9 +16,26 @@ class SFC64 {
       Next();
     }
 
+    uint64_t Next() {
+      uint64_t result = a + b + counter++;
+      a = b ^ (b >> 11);
+      b = c + (c << 3);
+      c = ((c << 24) | (c >> 40)) + result;
+      return result;
+    }
+
     int64_t NextInt(int64_t min, int64_t max) {
-      double sample = (double)Next() / (double)UINT64_MAX;
-      uint64_t range = max - min;
-      return (int64_t)(range * sample + min);
+      uint64_t range = (uint64_t)(max - min);
+      __uint128_t m = (__uint128_t)Next() * range;
+      uint64_t l = (uint64_t)m;  // low 64 bits
+      if (l < range) {
+        uint64_t threshold = (-range) % range;
+        while (l < threshold) {
+          m = (__uint128_t)Next() * range;
+          l = (uint64_t)m;
+        }
+      }
+
+      return (int64_t)((uint64_t)(m >> 64) + (uint64_t)min);
     }
 };
