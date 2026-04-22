@@ -1,12 +1,12 @@
 #pragma once
 
 #include <memory>
-#include <utility>
 #include <vector>
+#include <utility>
 #include <iostream>
 
-#include "philosopher.hpp"
 #include "bottle.hpp"
+#include "philosopher.hpp"
 
 class Table {
   private:
@@ -16,24 +16,39 @@ class Table {
   public:
     Table() : philosophers(), bottles() {}
 
-    int AddNewNode(std::unique_ptr<Philosopher> new_p) {
+    void AddNewNode(std::unique_ptr<Philosopher> new_p) {
       new_p->idx = philosophers.size();
       philosophers.push_back(std::move(new_p));
-
-      return new_p->idx;
     }
 
     void AddEdge(int idx1, int idx2) {
-      std::unique_ptr<Bottle> new_bottle = std::make_unique<Bottle>();
-      philosophers[idx1]->AddNeighboor(idx2, new_bottle.get());
-      philosophers[idx2]->AddNeighboor(idx1, new_bottle.get());
-      bottles.push_back(std::move(new_bottle));
+      bottles.push_back(std::make_unique<Bottle>());
+      const int bot_idx = bottles.size() - 1;
+      philosophers[idx1]->AddNeighboor(idx2, bottles[bot_idx].get());
+      philosophers[idx2]->AddNeighboor(idx1, bottles[bot_idx].get());
+    }
+
+    void StartSimulation() {
+      for (auto&& p : philosophers)
+        p->StartThreadJob();
+    }
+
+    void StopSimulation() {
+      for (auto&& p : philosophers)
+        p->StopThreadJob();
+    }
+
+    void DisplayStats() {
+      for (auto&& p : philosophers) {
+        std::cout << "Index: " << p->idx << '\n';
+        p->DisplayStats();
+      }
     }
 
     void DisplayStructure() {
       for (auto&& p : philosophers) {
         std::cout << p->idx << " -> ";
-        for (int adj : p->adj_list)
+        for (auto&& adj : p->adj_list)
           std::cout << adj << ", ";
         std::cout << '\n';
       }

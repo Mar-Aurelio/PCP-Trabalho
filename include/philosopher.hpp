@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <vector>
 #include <chrono>
 #include <cstdint>
@@ -98,6 +99,12 @@ class Philosopher {
       adj_list.push_back(idx);
       channels[idx] = ch;
       neighboors++;
+    }
+
+    void DisplayStats() {
+      std::cout << "  Wanted_Bottles: " << wanted_bottles << '\n'
+        << "  Time_Thirsty: " << time_thirsty << '\n'
+        << "  State: " << (int)current_state << '\n' << std::endl;
     }
 
     void StartThreadJob() {
