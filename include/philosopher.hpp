@@ -3,6 +3,7 @@
 #include <vector>
 #include <chrono>
 #include <cstdint>
+#include <unistd.h>
 #include <pthread.h>
 #include <unordered_map>
 
@@ -40,24 +41,18 @@ class Philosopher {
         auto current_time_check = std::chrono::steady_clock::now();
         
         this_ptr->time_elapsed_since_last_loop = std::chrono::duration<double>(current_time_check - last_time_check).count();
-        this_ptr->StateMachine();
+        if (this_ptr->StateMachine() == false) return NULL;
 
         last_time_check = current_time_check;
       } 
-
-      return NULL;
     }
 
-    void StateMachine() {
+    bool StateMachine() {
       switch (current_state) {
         case State::TRANQUILO:
-          if (time_until_state_change > 0) {
-            time_until_state_change -= time_elapsed_since_last_loop;
-          }
-          else {
-            current_state = State::SEDE;
-            wanted_bottles = rng.NextInt(2, neighboors);
-          }
+          if (sleep(time_until_state_change != 0)) return false;
+          current_state = State::SEDE;
+          wanted_bottles = rng.NextInt(2, neighboors);
           break;
         case State::SEDE:
           RequestBottles();
@@ -73,15 +68,13 @@ class Philosopher {
           }
           break;
         case State::BEBENDO:
-          if (time_until_state_change > 0) {
-            time_until_state_change -= time_elapsed_since_last_loop;
-          }
-          else {
-            current_state = State::TRANQUILO;
-            time_until_state_change = rng.NextInt(0, neighboors);
-          }
+          if (sleep(time_until_state_change != 0)) return false;
+          current_state = State::TRANQUILO;
+          time_until_state_change = rng.NextInt(0, neighboors);
           break;
       }
+
+      return true;
     }
 
   protected:
@@ -108,8 +101,11 @@ class Philosopher {
     }
 
     void StartThreadJob() {
-      std::chrono::steady_clock::now();
       time_until_state_change = (double)rng.NextInt(0, neighboors);
       pthread_create(&thread_id, NULL, ThreadJob, this);
+    }
+
+    void StopThreadJob() {
+      pthread_cancel(thread_id);
     }
 };
