@@ -48,7 +48,7 @@ class Philosopher {
           if (sleep(time_until_state_change) != 0) 
             return false;
           current_state = State::SEDE;
-          wanted_bottles = rng.NextInt(2, neighboors);
+          wanted_bottles = rng.NextInt(2, neighboors + 1);
           break;
         case State::SEDE:
           RequestBottles();
@@ -111,8 +111,9 @@ class Philosopher {
 
     void DisplayStats() {
       std::cout << "  Wanted_Bottles: " << wanted_bottles << '\n'
+        << "  Acquired_Bottles: " << acquired_bottles << '\n'
         << "  Drink_Counter: " << drink_counter << '\n'
-        << "  Time_Thirsty: " << time_thirsty << '\n'
+        << "  Total_Time_Thirsty: " << total_time_thirsty << '\n'
         << "  State: " << (int)current_state << '\n';
     }
 
@@ -124,4 +125,7 @@ class Philosopher {
     void StopThreadJob() {
       pthread_cancel(thread_id);
     }
+
+    State GetState() const { return current_state; }
+    double GetTotalTimeThirsty() const { return total_time_thirsty; }
 };
