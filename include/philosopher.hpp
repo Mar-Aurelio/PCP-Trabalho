@@ -90,11 +90,15 @@ class Philosopher {
     std::vector<uint64_t> adj_list;
 
     Philosopher(uint64_t seed) : 
+      thread_id(-1),
       time_thirsty(0),
       time_until_state_change(0),
+      time_elapsed_since_last_loop(0),
+      total_time_thirsty(0),
       current_state(State::TRANQUILO),
       neighboors(0),
       wanted_bottles(0),
+      acquired_bottles(0),
       channels(),
       rng(seed),
       drink_counter(0) {}
