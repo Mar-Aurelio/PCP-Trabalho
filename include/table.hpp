@@ -17,7 +17,6 @@ class Table {
     Table() : philosophers(), bottles() {}
 
     void AddNewNode(std::unique_ptr<Philosopher> new_p) {
-      new_p->idx = philosophers.size();
       philosophers.push_back(std::move(new_p));
     }
 
@@ -28,29 +27,29 @@ class Table {
       philosophers[idx2]->AddNeighboor(idx1, bottles[bot_idx].get());
     }
 
-    void StartSimulation() {
-      for (auto&& p : philosophers)
-        p->StartThreadJob();
-    }
+    void Simulate(int solution_constrain) {
+      for (auto&& philosopher : philosophers)
+        philosopher->StartThreadJob();
 
-    void StopSimulation() {
-      for (auto&& p : philosophers)
-        p->StopThreadJob();
-    }
+      bool is_satisfied = false;
+      while (!is_satisfied) {
+        bool is_done = true;
+        for (auto&& philosopher : philosophers) {
+          is_done = is_done && philosopher->drink_counter >= solution_constrain; 
+        }
+        is_satisfied = is_done;
 
-    void DisplayStats() {
-      for (auto&& p : philosophers) {
-        std::cout << "Index: " << p->idx << '\n';
-        p->DisplayStats();
+        int i = 0;
+        for (auto&& philosopher : philosophers) {
+          std::cout << "Philosopher id: " << i++ << '\n';
+          philosopher->DisplayStats();
+        }
+        if (!is_satisfied)
+          std::cout << "\033[" << 5*i << "A\r";
+        sleep(1);
       }
-    }
 
-    void DisplayStructure() {
-      for (auto&& p : philosophers) {
-        std::cout << p->idx << " -> ";
-        for (auto&& adj : p->adj_list)
-          std::cout << adj << ", ";
-        std::cout << '\n';
-      }
+      for (auto&& philosopher : philosophers)
+        philosopher->StopThreadJob();
     }
 };
