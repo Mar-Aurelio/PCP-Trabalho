@@ -22,7 +22,7 @@ class Philosopher_Random : public Philosopher {
       if (!has_bottles) {
         for (auto&& bot_idx : owned_bottles) {
           channels[bot_idx]->mutex.unlock();
-          sleep(rng.NextInt(0, 4));
+          sleep(rng.NextInt(0, neighboors));
         }
         owned_bottles.clear();
       }
