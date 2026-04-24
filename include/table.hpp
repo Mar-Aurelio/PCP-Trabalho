@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <unistd.h>
 #include <vector>
 #include <utility>
 #include <iomanip>
@@ -71,7 +72,7 @@ class Table {
         std::cout << "\n\n";
         if (!is_satisfied)
           std::cout << "\033[5A" << "\033[0J";
-        sleep(1);
+        usleep(250);
       }
 
       for (auto&& philosopher : philosophers)
