@@ -60,12 +60,12 @@ class Philosopher {
             total_time_thirsty += time_thirsty;
             time_thirsty = 0.0;
             time_until_state_change = 1.0;
-            ReleaseBottles();
           }
           break;
         case State::BEBENDO:
           if (sleep(time_until_state_change) != 0)
             return false;
+          ReleaseBottles();
           current_state = State::TRANQUILO;
           drink_counter++;
           time_until_state_change = rng.NextInt(0, neighboors);
