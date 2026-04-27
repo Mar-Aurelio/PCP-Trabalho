@@ -9,17 +9,20 @@ class Philosopher_Random : public Philosopher {
     std::vector<uint64_t> owned_bottles;
   protected:
     void RequestBottles() override {
-      bool has_bottles = false;
+      bool got_new_bottle = false;
       for (auto&& neig_bot : channels) {
-        if (neig_bot.second->mutex.try_lock())
+        if (neig_bot.second->mutex.try_lock()) {
           owned_bottles.push_back(neig_bot.first);
-        if (owned_bottles.size() >= wanted_bottles) {
-          has_bottles = true;
+          got_new_bottle = true;
           break;
         }
       }
 
-      if (!has_bottles) {
+      bool has_enough_bottles = false;
+      if (owned_bottles.size() >= wanted_bottles)
+        has_enough_bottles = true;
+
+      if (!has_enough_bottles && !got_new_bottle) {
         ReleaseBottles();
         sleep(rng.NextInt(0, neighboors));
       }
