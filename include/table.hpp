@@ -72,7 +72,7 @@ class Table {
         std::cout << "\n\n";
         if (!is_satisfied)
           std::cout << "\033[5A" << "\033[0J";
-        usleep(250);
+        usleep(500);
       }
 
       for (auto&& philosopher : philosophers)
