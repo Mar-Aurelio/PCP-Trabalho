@@ -70,8 +70,15 @@ class Table {
             << philosopher->GetTotalTimeThirsty() << "  ";
         }
         std::cout << "\n\n";
-        if (!is_satisfied)
-          std::cout << "\033[5A" << "\033[0J";
+        if (!is_satisfied){
+          #if defined(_WIN32)
+              system("cls");
+          #elif defined(__linux__) || defined(__APPLE__)
+              std::cout << "\033[5A" << "\033[0J";
+          #else
+              system("clear");  // fallback genérico
+          #endif
+        }
         usleep(500);
       }
 

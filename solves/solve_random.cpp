@@ -40,6 +40,9 @@ class Philosopher_Random : public Philosopher {
 #include "../include/test.hpp"
 
 int main(int argc, char** argv) {
+  #if defined(_WIN32)
+    system("chcp 65001 > nul");  // força UTF-8 no Windows
+  #endif
   if (argc < 3)
     return 0;
   
