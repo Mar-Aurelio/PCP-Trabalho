@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <memory>
 #include <unistd.h>
 #include <vector>
@@ -75,7 +76,31 @@ class Table {
         usleep(500);
       }
 
-      for (auto&& philosopher : philosophers)
+      double average = 0;
+      double std_dev = 0;
+      double highest = -1;
+      double lowest = 1e9;
+      for (auto&& philosopher : philosophers) {
         philosopher->StopThreadJob();
+        double time = philosopher->GetTotalTimeThirsty();
+        average += time;
+        if (time > highest)
+          highest = time;
+        else if (time < lowest)
+          lowest = time;
+      }
+      average /= philosophers.size();
+
+      for (auto&& philosopher : philosophers) {
+        std_dev += (philosopher->GetTotalTimeThirsty() - average)*(philosopher->GetTotalTimeThirsty() - average);
+      }
+      std_dev /= philosophers.size();
+      std_dev = std::sqrt(std_dev);
+
+      std::cout << "Test Complete\n"
+        "Average: " << average << '\n' <<
+        "Deviation: " << std_dev << '\n' <<
+        "Higest Wait Time: " << highest << '\n' <<
+        "Lowest Wait Time: " << lowest << '\n';
     }
 };
