@@ -85,6 +85,10 @@ class Philosopher {
     virtual void RequestBottles() = 0;
     virtual void ReleaseBottles() = 0;
 
+    void addThirstyTime(double t) {
+          total_time_thirsty += t;
+      }
+
   public:
     int drink_counter;
     std::vector<uint64_t> adj_list;
